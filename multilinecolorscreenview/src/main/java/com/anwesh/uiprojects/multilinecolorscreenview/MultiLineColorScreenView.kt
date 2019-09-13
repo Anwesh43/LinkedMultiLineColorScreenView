@@ -20,3 +20,34 @@ val strokeFactor : Int = 40
 fun Int.inverse() : Float = 1f / this
 fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
 fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale(i, n)) * n
+
+fun Canvas.drawLineColorScreen(i : Int, hGap : Float, w : Float, sc1 : Float, sc2 : Float, shouldDraw : Boolean, paint : Paint) {
+    val sc1i : Float = sc1.divideScale(0, 2)
+    val sc2i : Float = sc2.divideScale(1, 2)
+    var size : Float = w * sc2i
+    if (shouldDraw) {
+        size = w
+    }
+    save()
+    translate(0f, hGap * (i + 1))
+    drawLine(w * sc1i, 0f, size, 0f, paint)
+    restore()
+}
+
+fun Canvas.drawMultiLineColorScreen(hGap : Float, w : Float, sc1 : Float, sc2 : Float, shouldDraw : Boolean, paint : Paint) {
+    for (j in 0..(lines - 1)) {
+        drawLineColorScreen(j, hGap, w, sc1, sc2, shouldDraw, paint)
+    }
+}
+
+fun Canvas.drawMLCSNode(i : Int, scale : Float, sc : Float, currI : Int, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    val gap : Float = h / (colors.size + 1)
+    paint.color = Color.parseColor(colors[i])
+    paint.strokeWidth = Math.min(w, h) / strokeFactor
+    paint.strokeCap = Paint.Cap.ROUND
+    save()
+    drawMultiLineColorScreen(gap, w, scale, sc, currI == i, paint)
+    restore()
+}
