@@ -17,15 +17,19 @@ val lines : Int = 5
 val scGap : Float = 0.01f / lines
 val strokeFactor : Int = 40
 val backColor : Int = Color.parseColor("#BDBDBD")
+val delay : Long = 5
 
 fun Int.inverse() : Float = 1f / this
 fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
 fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale(i, n)) * n
 
 fun Canvas.drawLineColorScreen(i : Int, hGap : Float, w : Float, sc1 : Float, sc2 : Float, shouldDraw : Boolean, paint : Paint) {
-    val sc1i : Float = sc1.divideScale(0, 2)
-    val sc2i : Float = sc2.divideScale(1, 2)
-    var size : Float = w * sc2i
+    val sc1i : Float = sc1.divideScale(i, lines)
+    val sc2i : Float = sc2.divideScale(i, lines)
+    var size : Float = 0f
+    if (sc2i > 0f) {
+        size = w * sc2i
+    }
     if (shouldDraw) {
         size = w
     }
@@ -97,7 +101,7 @@ class MultiLineColorScreenView(ctx : Context) : View(ctx) {
             if (animated) {
                 cb()
                 try {
-                    Thread.sleep(50)
+                    Thread.sleep(delay)
                     view.invalidate()
                 } catch(ex : Exception) {
 
@@ -213,7 +217,7 @@ class MultiLineColorScreenView(ctx : Context) : View(ctx) {
         fun create(activity : Activity) : MultiLineColorScreenView {
             val view : MultiLineColorScreenView = MultiLineColorScreenView(activity)
             activity.setContentView(view)
-            return view 
+            return view
         }
     }
 }
