@@ -16,6 +16,7 @@ val colors : Array<String> = arrayOf("#9C27B0", "#2196F3", "#00C853", "#1A237E",
 val lines : Int = 5
 val scGap : Float = 0.01f / lines
 val strokeFactor : Int = 40
+val backColor : Int = Color.parseColor("#BDBDBD")
 
 fun Int.inverse() : Float = 1f / this
 fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
@@ -43,7 +44,7 @@ fun Canvas.drawMultiLineColorScreen(hGap : Float, w : Float, sc1 : Float, sc2 : 
 fun Canvas.drawMLCSNode(i : Int, scale : Float, sc : Float, currI : Int, paint : Paint) {
     val w : Float = width.toFloat()
     val h : Float = height.toFloat()
-    val gap : Float = h / (colors.size + 1)
+    val gap : Float = h / (lines + 1)
     paint.color = Color.parseColor(colors[i])
     paint.strokeWidth = Math.min(w, h) / strokeFactor
     paint.strokeCap = Paint.Cap.ROUND
@@ -182,6 +183,28 @@ class MultiLineColorScreenView(ctx : Context) : View(ctx) {
 
         fun startUpdating(cb : () -> Unit) {
             curr.startUpdating(cb)
+        }
+    }
+
+    data class Renderer(var view : MultiLineColorScreenView) {
+
+        private val mlcs : MultiLineColorScreen = MultiLineColorScreen(0)
+        private val animator : Animator = Animator(view)
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(backColor)
+            mlcs.draw(canvas, paint)
+            animator.animate {
+                mlcs.update {
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            mlcs.startUpdating {
+                animator.start()
+            }
         }
     }
 }
