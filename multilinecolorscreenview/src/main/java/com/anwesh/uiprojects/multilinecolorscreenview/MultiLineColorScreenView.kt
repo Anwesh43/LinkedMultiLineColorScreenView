@@ -208,4 +208,12 @@ class MultiLineColorScreenView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+        fun create(activity : Activity) : MultiLineColorScreenView {
+            val view : MultiLineColorScreenView = MultiLineColorScreenView(activity)
+            activity.setContentView(view)
+            return view 
+        }
+    }
 }
