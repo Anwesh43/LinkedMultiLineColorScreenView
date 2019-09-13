@@ -56,15 +56,16 @@ fun Canvas.drawMLCSNode(i : Int, scale : Float, sc : Float, currI : Int, paint :
 class MultiLineColorScreenView(ctx : Context) : View(ctx) {
 
     private val paint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val renderer : Renderer = Renderer(this)
 
     override fun onDraw(canvas : Canvas) {
-
+        renderer.render(canvas, paint)
     }
 
     override fun onTouchEvent(event : MotionEvent) : Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-
+                renderer.handleTap()
             }
         }
         return true
@@ -191,7 +192,7 @@ class MultiLineColorScreenView(ctx : Context) : View(ctx) {
         private val mlcs : MultiLineColorScreen = MultiLineColorScreen(0)
         private val animator : Animator = Animator(view)
 
-        fun draw(canvas : Canvas, paint : Paint) {
+        fun render(canvas : Canvas, paint : Paint) {
             canvas.drawColor(backColor)
             mlcs.draw(canvas, paint)
             animator.animate {
