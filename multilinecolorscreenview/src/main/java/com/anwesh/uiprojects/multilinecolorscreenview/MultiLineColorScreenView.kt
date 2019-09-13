@@ -116,4 +116,48 @@ class MultiLineColorScreenView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    data class MLCSNode(var i : Int, val state : State = State()) {
+
+        private var next : MLCSNode? = null
+        private var prev : MLCSNode? = null
+
+        init {
+            addNeighbor()
+        }
+
+        fun addNeighbor() {
+            if (i < colors.size - 1) {
+                next = MLCSNode(i + 1)
+                next?.prev = this
+            }
+        }
+
+        fun draw(canvas : Canvas, sc : Float, currI : Int, paint : Paint) {
+            canvas.drawMLCSNode(i, state.scale, sc, currI, paint)
+            if (state.scale > 0f) {
+                next?.draw(canvas, sc, currI, paint)
+            }
+        }
+
+        fun update(cb : (Float) -> Unit) {
+            state.update(cb)
+        }
+
+        fun startUpdating(cb : () -> Unit) {
+            state.startUpdating(cb)
+        }
+
+        fun getNext(dir : Int, cb : () -> Unit) : MLCSNode {
+            var curr : MLCSNode? = prev
+            if (dir == 1) {
+                curr = next
+            }
+            if (curr != null) {
+                return curr
+            }
+            cb()
+            return this 
+        }
+    }
 }
